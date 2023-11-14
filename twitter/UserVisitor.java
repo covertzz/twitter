@@ -1,5 +1,6 @@
 /*
- * This file deals with all aspects of the visitor design principle, namely for functions getID, getCount (# of tweets),
+ * Author: Palmer Du
+ * Description: This file deals with all aspects of the visitor design principle, namely for functions getID, getCount (# of tweets),
  * and getPositive (# of positive tweets).
  */
 import java.util.*;
