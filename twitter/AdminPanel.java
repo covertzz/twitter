@@ -10,6 +10,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class AdminPanel {
     private static twitter twitter = new twitter();
@@ -28,6 +29,8 @@ public class AdminPanel {
     private static JButton openUserView = new JButton("Open User View");
     private static JButton showCount=new JButton("Show Total Number of Tweets"); 
     private static JButton showPositive=new JButton("Show Percentage of Positive Tweets"); 
+    private static JButton validateIDS=new JButton("Validate IDs");
+    private static JButton lastUpdatedUser = new JButton("Show Last Updated User");
     private static ArrayList<UserPanel> userPanels = new ArrayList<UserPanel>();
     //singleton 
     public static AdminPanel instance;
@@ -53,15 +56,10 @@ public class AdminPanel {
         try {
             if(!username.equals(null)) {
                 if(!selectedNode.getUserObject().getClass().equals(User.class)) {
-                    if(!root.hasChild(username)){
-                        User newUser = twitter.getInstance().createUser(addNewUsertf.getText());
-                        root.add(newUser);
-                        selectedNode.add(new DefaultMutableTreeNode(newUser));
-                        panel.setText("User " + newUser.getID() + " added");
-                    }
-                    else {
-                        panel.setText("Error: user " + username + " may not be added multiple times");
-                    }
+                    User newUser = twitter.getInstance().createUser(addNewUsertf.getText());
+                    root.add(newUser);
+                    selectedNode.add(new DefaultMutableTreeNode(newUser));
+                    panel.setText("User " + newUser.getID() + " added");
                     tree.updateUI();
                 }
                 else{
@@ -146,6 +144,36 @@ public class AdminPanel {
         }
     }
 
+    public static void validate() {
+        panel.setText("Everything is ok!");
+        for (Map.Entry<String, UserComponent> entry : root.getStuffInGroup().entrySet()) {
+            int count = 2;
+            if(entry.getValue().getID().contains(" ")) {
+                panel.setText("Error: the name " + entry.getValue().getID() + " contains a space");
+                break;
+            }
+            if(root.hasChild(entry.getKey())) {
+                count--;
+                if(count==0) {
+                    panel.setText("Error: the name " + entry.getValue().getID() + " is duplicated");
+                    break;
+                }
+            }
+        }
+    }   
+
+    public static void showLastUpdatedUser() {
+        long max = 0;
+        User user = null;
+        for (Map.Entry<String, UserComponent> entry : root.getStuffInGroup().entrySet()) {
+            if(entry.getValue().getTimeLastUpdated() > max) {
+                max = entry.getValue().getTimeLastUpdated();
+                user = (User)entry.getValue();
+            }
+        }
+        panel.setText(user.getID());
+    }
+
     private static void setListeners() {
         addNewUser.addActionListener(new ActionListener(){  
             public void actionPerformed(ActionEvent e) {addUser();}  
@@ -166,6 +194,7 @@ public class AdminPanel {
                 } 
                 catch (Exception ex) {
                     panel.setText("Error: user not selected");
+                    System.out.print(ex);
                 }
             }
         });
@@ -174,6 +203,12 @@ public class AdminPanel {
         });
         showPositive.addActionListener(new ActionListener(){  
             public void actionPerformed(ActionEvent e) {showPositive();}  
+        });
+        validateIDS.addActionListener(new ActionListener(){  
+            public void actionPerformed(ActionEvent e) {validate();}  
+        });
+        lastUpdatedUser.addActionListener(new ActionListener(){  
+            public void actionPerformed(ActionEvent e) {showLastUpdatedUser();}  
         });
         tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
             @Override
@@ -193,11 +228,13 @@ public class AdminPanel {
         addNewGroup.setBounds(530,50,200,30);  
         addNewGrouptf.setBounds(320,50, 200,30);
         showGroupTotal.setBounds(530,360 ,200,30);  
-        selectedLabel.setBounds(500, 350, 500, 49);
+        selectedLabel.setBounds(500, 280, 500, 30);
         openUserView.setBounds(320, 90, 410, 30);
         showCount.setBounds(320,400 ,200,30);
         showPositive.setBounds(530,400 ,200,30);
-        f.setSize(1000,500);  
+        validateIDS.setBounds(320, 320, 200, 30);
+        lastUpdatedUser.setBounds(530, 320, 200, 30);
+        f.setSize(1000,500); 
         f.setLayout(null); 
     }
 
@@ -205,6 +242,6 @@ public class AdminPanel {
         f.add(panel);
         f.add(addNewUser);f.add(addNewUsertf);f.add(showUserTotal);
         f.add(addNewGroup);f.add(addNewGrouptf);f.add(showGroupTotal);
-        f.add(tree);f.add(selectedLabel);f.add(openUserView);f.add(showCount);f.add(showPositive);
+        f.add(tree);f.add(selectedLabel);f.add(openUserView);f.add(showCount);f.add(showPositive);f.add(validateIDS);f.add(lastUpdatedUser);
     }
 }
