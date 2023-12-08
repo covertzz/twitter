@@ -17,10 +17,13 @@ public class UserPanel {
     private JTextArea posttf = new JTextArea();
     private JButton post = new JButton("Post");
     private JTextArea newsFeed = new JTextArea("News Feed:\n");
+    private JLabel timeOfCreation = new JLabel("Time of Creation");
+    private JLabel timeLastUpdated = new JLabel("Time Last Updated");
 
     public UserPanel(User uc) {
         user = uc;
         u.setTitle(user.getID() + " User Panel ");
+        timeOfCreation.setText("Time of Creation: " + user.getTimeOfCreation());
     }
     public void build() {
         setListeners();
@@ -52,6 +55,7 @@ public class UserPanel {
     } 
     public void updateNewsFeed(User postingUser) {
         newsFeed.append(" - " + postingUser.getID()+ ": " + this.user.getNewsFeed().get(this.user.getNewsFeed().size()-1) + "\n");
+        timeLastUpdated.setText("Time Last Updated: " + user.getTimeLastUpdated());
     }
 
     private void setListeners() {
@@ -74,12 +78,15 @@ public class UserPanel {
         post.setBounds(320, 360, 100, 30);
         posttf.setBounds(10, 360, 300, 30);
         newsFeed.setBounds(10, 400, 420, 300);
+        timeLastUpdated.setBounds(10, 710, 200, 30);
+        timeOfCreation.setBounds(220, 710, 200, 30);
+
         u.setSize(500,1000);  
         u.setLayout(null);  
     }
 
     private void addElements() {
         u.add(followUser);u.add(followUsertf);u.add(following);
-        u.add(post);u.add(posttf);u.add(newsFeed);
+        u.add(post);u.add(posttf);u.add(newsFeed);u.add(timeLastUpdated);u.add(timeOfCreation);
     }
 }
