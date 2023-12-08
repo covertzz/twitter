@@ -15,6 +15,8 @@ public interface UserComponent {
     void accept(UserVisitor uv);
     int getCount(UserVisitor uv);
     int getPositive(UserVisitor uv);
+    long getTimeOfCreation();
+    long getTimeLastUpdated();
 }
 
 //leaf
@@ -25,13 +27,21 @@ class User implements UserComponent{
     private ArrayList<String> followers = new ArrayList<String>();
     private ArrayList<String> following = new ArrayList<String>();
     private ArrayList<String> newsFeed = new ArrayList<String>();
+    private long timeOfCreation = 0;
+    private long timeLastUpdated = 0;
+
     
-    public User(String ID){this.ID = ID;}
+    public User(String ID){
+        this.ID = ID;
+        timeOfCreation = System.currentTimeMillis();
+    }
     public String getID(){return ID;}
     public void setID(String ID){this.ID = ID;}
     public ArrayList<String> getFollowers() {return followers;}
     public ArrayList<String> getFollowing() {return following;}
     public ArrayList<String> getNewsFeed() {return newsFeed;}
+    public long getTimeOfCreation() {return timeOfCreation;}
+    public long getTimeLastUpdated() {return timeLastUpdated;}
 
     public void add(UserComponent newUserComponent) {
         System.out.print("you cannot add a user component to a user!");
@@ -48,6 +58,7 @@ class User implements UserComponent{
         for(String s : followers) {
             twitter.getInstance().allUsers.get(s).updateNewsFeed(post);
         }
+        timeLastUpdated = System.currentTimeMillis();
     }
     public void updateNewsFeed(String post) { //observer
         newsFeed.add(post);
@@ -77,13 +88,14 @@ class User implements UserComponent{
 class UserGroup implements UserComponent{
     String ID; 
     private HashMap<String, UserComponent> stuffInGroup = new HashMap<String, UserComponent>();
+    private long timeOfCreation = System.currentTimeMillis();
 
     public UserGroup(String GroupId) {this.ID = GroupId;}
     public String getID(){return ID;}
-    public String getID(String ID) {
-        return stuffInGroup.get(ID).getID();
-    }
+    public String getID(String ID) {return stuffInGroup.get(ID).getID();}
     public void setID(String ID){this.ID = ID + "G";}
+    public long getTimeOfCreation() {return timeOfCreation;}
+    public long getTimeLastUpdated() {return 0;}
 
     public void add(UserComponent newUserComponent) {
         stuffInGroup.put(newUserComponent.getID(), newUserComponent);
